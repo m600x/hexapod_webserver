@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Hexapod webserver</title>
+    {{ turbo() }}
+  </head>
+  <body>
+    {% include "ui_ultrasonic.html" %}
+    {% block ultrasonic %}{% endblock %}
+
+    {% include "ui_voltage.html" %}
+    {% block voltage %}{% endblock %}
+
+    {% include "ui_mpu.html" %}
+    {% block mpu %}{% endblock %}
+  </body>
+</html>
