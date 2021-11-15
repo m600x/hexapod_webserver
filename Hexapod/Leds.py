@@ -11,7 +11,7 @@ LED_FREQ_HZ = 800000  # LED signal frequency in hertz (usually 800khz)
 LED_DMA = 10          # DMA channel to use for generating signal (try 10)
 LED_BRIGHTNESS = 255  # Set to 0 for darkest and 255 for brightest
 LED_INVERT = False    # True to invert the signal (when using NPN transistor level shift)
-LED_CHANNEL = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
+LED_CHAN = 0          # set to '1' for GPIOs 13, 19, 41, 45 or 53
 
 
 class Led:
@@ -20,16 +20,7 @@ class Led:
         """
         self.logger = logging.getLogger('root')
         self.logger.info('Ignition of leds class')
-        self.LedMod='1'
-        self.colour = [0, 0, 0]
-        self.ORDER = "RGB"
-        self.strip = Adafruit_NeoPixel(LED_COUNT,
-                                       LED_PIN,
-                                       LED_FREQ_HZ,
-                                       LED_DMA,
-                                       LED_INVERT,
-                                       LED_BRIGHTNESS,
-                                       LED_CHANNEL)
+        self.strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHAN)
         self.strip.begin()
 
     def rainbow(self, wait_ms=20, iterations=1):

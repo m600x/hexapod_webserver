@@ -3,11 +3,14 @@
 
 import time
 import logging
+import threading
 import RPi.GPIO as GPIO
 
 TRIGGER_PIN = 27
 ECHO_PIN = 22
 TIMEOUT_POLL = 10000
+
+POLLING_INTERVAL = 1
 
 
 class Ultrasonic:
@@ -20,6 +23,17 @@ class Ultrasonic:
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(TRIGGER_PIN, GPIO.OUT)
         GPIO.setup(ECHO_PIN, GPIO.IN)
+
+        self.current_distance = 0
+        self.ultrasonic_poller = threading.Thread(target=self.poller_ultrasonic)
+        self.ultrasonic_poller.start()
+
+    def poller_ultrasonic(self):
+        """Threaded poller for the ultrasonic sensor
+        """
+        while True:
+            self.current_distance = self.get_distance()
+            time.sleep(POLLING_INTERVAL)
 
     @staticmethod
     def send_trigger_pulse():

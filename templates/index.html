@@ -1,17 +1,60 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Hexapod webserver</title>
     {{ turbo() }}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
   </head>
+
   <body>
-    {% include "ui_ultrasonic.html" %}
-    {% block ultrasonic %}{% endblock %}
+    {% include "scripts.html" %}
+    {% block scripts %}{% endblock %}
 
-    {% include "ui_voltage.html" %}
-    {% block voltage %}{% endblock %}
-
-    {% include "ui_mpu.html" %}
+    <div class= "container-fluid">
+      <div class= "row">
+        <div class ="col-md-9">
+          <h2>Video stream</h2>
+        </div>
+        <div class ="col-md-3">
+          <h2>Telemetry</h2>
+          {% include "ui_ultrasonic.html" %}
+          {% block ultrasonic %}{% endblock %}
+          {% include "ui_mpu.html" %}
     {% block mpu %}{% endblock %}
+        </div>
+      </div>
+      <div class= "row">
+        <div class ="col-md-3">
+          <h2>Base</h2>
+          {% include "ui_servo.html" %}
+          {% block servo %}{% endblock %}
+          {% if servo %}
+            <form><a href=# id=disable-servo><button class='btn btn-danger'>Disable</button></a></form>
+          {% else %}
+            <form><a href=# id=enable-servo><button class='btn btn-primary'>Enable</button></a></form>
+          {% endif %}
+        </div>
+        <div class ="col-md-3">
+          <h2>Control</h2>
+        </div>
+        <div class ="col-md-3">
+          <h2>Functions</h2>
+        </div>
+        <div class ="col-md-3">
+          <h2>Status</h2>
+          {% include "ui_voltage.html" %}
+          {% block voltage %}{% endblock %}
+        </div>
+      </div>
+    </div>
+
+
+
+
+
+
+
   </body>
 </html>

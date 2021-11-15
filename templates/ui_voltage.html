@@ -1,4 +1,38 @@
+    <div class= "container-fluid" id="battery" class="battery">
+      <div class= "row">
+        <div class ="col-md-4">
+          <h5>Battery 1</h5>
+        </div>
+        <div class ="col-md-8">
+          <h5>{{ b1_volt }} volts ({{ '%0.2f' % b1_pct }}%)</h5>
+        </div>
+        <div class="progress" style="height: 30px;">
+          {% set b1_pct_int = b1_pct | int %}
+          <div class="progress-bar" role="progressbar" style="width: {{ b1_pct_int }}%;" aria-valuenow="{{ b1_pct_int }}" aria-valuemin="64" aria-valuemax="84">{{ b1_pct_int }} %</div>
+        </div>
+      </div>
+      <div class= "row">
+        <div class ="col-md-4">
+          <h5>Battery 2</h5>
+        </div>
+        <div class ="col-md-8">
+          <h5>{{ b2_volt }} volts ({{ '%0.2f' % b2_pct }}%)</h5>
+        </div>
+        <div class="progress" style="height: 30px;">
+          {% set b2_pct_int = b2_pct | int %}
+          <div class="progress-bar" role="progressbar" style="width: {{ b2_pct_int }}%;" aria-valuenow="{{ b2_pct_int }}" aria-valuemin="64" aria-valuemax="84">{{ b2_pct_int }} %</div>
+        </div>
+      </div>
+    </div>
+
+
+<!--
 <div id="battery" class="battery">
-    <p class="error"><strong>Battery 1:</strong> {{ battery1 }} volts
-    <p class="error"><strong>Battery 2:</strong> {{ battery2 }} volts
+  <p><strong>Battery 1:</strong> {{ b1_volt }} volts ({{ '%0.2f' % b1_pct }}%)
+  <p><strong>Battery 2:</strong> {{ b2_volt }} volts ({{ '%0.2f' % b2_pct }}%)
+  <p><strong>dummy:</strong> {{ '%0.2f' % dummy }} volts ({{ dummy_pct }}%)
+    <div class="progress" style="height: 20px;">
+        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{ dummy_pct | int }}%;" aria-valuenow="{{ dummy_pct }}" aria-valuemin="64" aria-valuemax="84">{{ dummy_pct }} %</div>
+    </div>
 </div>
+-->

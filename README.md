@@ -15,6 +15,8 @@ WIP: Only display raw sensor value
 
 ### Installation
 ```shell
+sudo apt-get install build-essential libcap-dev
+
 python3 -m pip install -r requirements.txt
 ```
 

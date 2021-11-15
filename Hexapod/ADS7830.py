@@ -1,11 +1,18 @@
 #!/usr/bin/env python3
 # coding:utf-8
 
+import time
 import smbus
 import logging
+import threading
 
 ADS7830_CMD = 0x84
 ADS7830_DEFAULT_ADDRESS = 0x48
+
+POLLING_INTERVAL = 5
+
+BATTERY_MIN = 6.4
+BATTERY_MAX = 8.4
 
 
 class ADS7830:
@@ -20,12 +27,39 @@ class ADS7830:
         self.battery1Voltage = [0] * 25
         self.battery2Voltage = [0] * 25
 
+        self.current_b1_volt = 0
+        self.current_b2_volt = 0
+        self.current_b1_pct = 0
+        self.current_b2_pct = 0
+        self.battery1_poller = threading.Thread(target=self.poller_battery1)
+        self.battery1_poller.start()
+        self.battery2_poller = threading.Thread(target=self.poller_battery2)
+        self.battery2_poller.start()
+
+    def poller_battery1(self):
+        """Threaded poller for battery 1
+        """
+        while True:
+            self.logger.debug("Polling battery 1")
+            self.current_b1_volt = round(self.voltage(0) * 3, 2)
+            self.current_b1_pct = ((self.current_b1_volt - BATTERY_MIN) * 100) / (BATTERY_MAX - BATTERY_MIN)
+            time.sleep(POLLING_INTERVAL)
+
+    def poller_battery2(self):
+        """Threaded poller for battery 2
+        """
+        while True:
+            self.logger.debug("Polling battery 2")
+            self.current_b2_volt = round(self.voltage(4) * 3, 2)
+            self.current_b2_pct = ((self.current_b2_volt - BATTERY_MIN) * 100) / (BATTERY_MAX - BATTERY_MIN)
+            time.sleep(POLLING_INTERVAL)
+
     def voltage(self, channel):
         battery_voltage = 0
         if channel == 0 or channel == 4:
             data = [0] * 25
             if self.battery1_flag is False or self.battery2_flag is False:
-                for i in range(25):
+                for x in range(25):
                     for j in range(25):
                         data[j] = self.read_adc(channel)
                     if channel == 0:
@@ -58,18 +92,11 @@ class ADS7830:
         return battery_voltage
 
     def read_adc(self, channel):
-        command_set = ADS7830_CMD | ((((channel << 2) | (channel >> 1)) & 0x07) << 4)
-        self.bus.write_byte(ADS7830_DEFAULT_ADDRESS, command_set)
-        data = self.bus.read_byte(ADS7830_DEFAULT_ADDRESS)
+        data = None
+        try:
+            command_set = ADS7830_CMD | ((((channel << 2) | (channel >> 1)) & 0x07) << 4)
+            self.bus.write_byte(ADS7830_DEFAULT_ADDRESS, command_set)
+            data = self.bus.read_byte(ADS7830_DEFAULT_ADDRESS)
+        except Exception as e:
+            self.logger.error("Error while reading ADS7830 sensor, reason: %s", e)
         return data
-
-    def battery_power(self):
-        battery1 = round(self.voltage(0) * 3, 2)
-        battery2 = round(self.voltage(4) * 3, 2)
-        return battery1, battery2
-
-    def get_battery_1_voltage(self):
-        return round(self.voltage(0) * 3, 2)
-
-    def get_battery_2_voltage(self):
-        return round(self.voltage(4) * 3, 2)

@@ -1,19 +1,23 @@
 #!/usr/bin/env python3
 # coding:utf-8
 
+import time
 import math
 import logging
+import threading
 from mpu6050 import mpu6050
 
 MPU6050_DEFAULT_ADDRESS = 0x68
+
+POLLING_INTERVAL = 1
 
 
 class MPU6050:
     def __init__(self):
         """Entry point of the MPU6050 class.
         """
-        logger = logging.getLogger('root')
-        logger.info('Ignition of MPU6050 class')
+        self.logger = logging.getLogger('root')
+        self.logger.info('Ignition of MPU6050 class')
         self.Kp = 100
         self.Ki = 0.002
         self.halfT = 0.001
@@ -32,6 +36,20 @@ class MPU6050:
         self.sensor.set_gyro_range(mpu6050.GYRO_RANGE_250DEG)
         self.kalman_filter = KalmanFilter(0.001, 0.1)
         self.Error_value_accel_data, self.Error_value_gyro_data = self.average_filter(self.sensor)
+
+        self.current_pitch = 0.0
+        self.current_roll = 0.0
+        self.current_yaw = 0.0
+        self.mpu_poller = threading.Thread(target=self.poller_mpu)
+        self.mpu_poller.start()
+
+    def poller_mpu(self):
+        """Threaded poller
+        """
+        while True:
+            self.logger.debug("Polling MPU sensor")
+            self.current_pitch, self.current_roll, self.current_yaw = self.get_mpu()
+            time.sleep(POLLING_INTERVAL)
 
     @staticmethod
     def average_filter(sensor):
